@@ -1,0 +1,12 @@
+fastapi==0.115.7
+uvicorn==0.34.0
+httpx==0.28.1
+sqlalchemy==2.0.54
+psycopg2-binary==2.9.13
+redis==8.1.0
+python-dotenv==1.0.1
+pydantic==2.10.6
+langchain-core==1.6.3
+langchain-ollama==1.1.0
+langgraph==1.2.11
+pytest==9.1.1

@@ -1,0 +1,71 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: agentic_workflow_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: agentic_workflow
+      POSTGRES_USER: workflow_user
+      POSTGRES_PASSWORD: workflow_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - workflow_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U workflow_user -d agentic_workflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    container_name: agentic_workflow_redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    volumes:
+      - workflow_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    image: agentic-workflow-engine:phase7
+    container_name: agentic_workflow_api
+    restart: unless-stopped
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DB: 0
+      REDIS_KEY_PREFIX: agentic_workflow
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: agentic_workflow
+      POSTGRES_USER: workflow_user
+      POSTGRES_PASSWORD: workflow_password
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+      OLLAMA_MODEL: qwen2.5:3b
+    ports:
+      - "8000:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  workflow_postgres_data:
+  workflow_redis_data:
