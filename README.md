@@ -4,6 +4,28 @@ An autonomous multi-agent workflow platform for planning, executing, monitoring,
 
 The system combines multi-agent orchestration, tool calling, persistent memory, asynchronous execution, reflection, retry logic, and production-oriented APIs into a single workflow engine.
 
+## Demo
+
+A typical workflow execution follows:
+
+```text
+Task Submission
+      ↓
+Supervisor
+      ↓
+Agent Selection
+      ↓
+Agent Execution
+      ↓
+Tool Calling
+      ↓
+Result Generation
+      ↓
+Reflection
+      ↓
+Accept / Retry
+```
+
 ## Architecture
 
 ```text
