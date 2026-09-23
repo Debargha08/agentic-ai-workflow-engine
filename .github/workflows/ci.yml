@@ -10,12 +10,47 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: agentic_workflow
+          POSTGRES_USER: workflow_user
+          POSTGRES_PASSWORD: workflow_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U workflow_user -d agentic_workflow"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: agentic_workflow
+      POSTGRES_USER: workflow_user
+      POSTGRES_PASSWORD: workflow_password
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
+      REDIS_DB: 0
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.10"
           cache: "pip"
@@ -27,4 +62,8 @@ jobs:
         run: python -m compileall -q app tests
 
       - name: Run tests
-        run: python -m pytest -q
+        run: >
+          python -m pytest -q
+          tests/evaluation
+          tests/integration/test_api.py
+          tests/unit
