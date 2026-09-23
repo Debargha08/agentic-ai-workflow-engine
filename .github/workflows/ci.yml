@@ -61,6 +61,14 @@ jobs:
       - name: Compile application
         run: python -m compileall -q app tests
 
+      - name: Initialize database
+        run: |
+          python - <<'PY'
+          from app.database.connection import initialize_database
+          initialize_database()
+          print("Database tables initialized successfully.")
+          PY
+
       - name: Run tests
         run: >
           python -m pytest -q
