@@ -47,8 +47,11 @@ services:
       POSTGRES_PASSWORD: workflow_password
       OLLAMA_BASE_URL: http://host.docker.internal:11434
       OLLAMA_MODEL: qwen2.5:3b
+      WORKSPACE_ROOT: /workspace
     ports:
       - "8000:8000"
+    volumes:
+      - .:/workspace
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:

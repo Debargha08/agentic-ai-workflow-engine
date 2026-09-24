@@ -1,4 +1,5 @@
 from typing import Any
+import os
 
 from langgraph.graph import END, START, StateGraph
 
@@ -20,7 +21,7 @@ from app.workflow.router import (
 from app.workflow.state import WorkflowState
 
 
-WORKSPACE_ROOT = "/home/debargha/python/Projects/agentic_workflow_engine"
+WORKSPACE_ROOT = os.getenv("WORKSPACE_ROOT", ".")
 
 supervisor = Supervisor()
 research_agent = ResearchAgent()

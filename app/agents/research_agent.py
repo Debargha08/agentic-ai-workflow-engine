@@ -57,11 +57,15 @@ Do not invent project files, fields, or contents.
             "fields",
             "implementation",
             "file",
+            "entry point",
         ]
 
         return any(term in text for term in terms)
 
     def _extract_search_query(self, task: str) -> str:
+        if "entry point" in task.lower() or "entrypoint" in task.lower():
+            return "FastAPI"
+
         if "workflowstate" in task.lower():
             return "WorkflowState"
 

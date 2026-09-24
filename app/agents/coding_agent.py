@@ -12,11 +12,7 @@ from app.tools.definitions import (
     shell_execute,
 )
 from app.workflow.state import ToolRequest, WorkflowState
-
-
 MAX_TOOL_ROUNDS = 4
-
-
 class CodingAgent:
     def __init__(self):
         self.tool_llm = get_llm(num_predict=256).bind_tools(
@@ -115,8 +111,13 @@ Do not use tools for a simple standalone coding answer.
         return any(term in text for term in terms)
 
     def _extract_search_query(self, task: str) -> str:
-        if "workflowstate" in task.lower():
+        text = task.lower()
+
+        if "workflowstate" in text:
             return "WorkflowState"
+
+        if "entry point" in text or "entrypoint" in text:
+            return "FastAPI"
 
         match = re.search(
             r"\b(?:definition|implementation|class|function)\s+"
@@ -172,7 +173,6 @@ Do not use tools for a simple standalone coding answer.
 
             if match:
                 return match.group(1)
-
         return None
 
     def _successful_tool_exists(
